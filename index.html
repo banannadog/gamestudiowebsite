@@ -345,16 +345,18 @@
       font-size: 10px;
       color: var(--yellow);
     }
-    #modal-close {
+    #modal-close, #modal-fullscreen {
       font-family: 'Press Start 2P', monospace;
       font-size: 10px;
       background: none;
       border: none;
-      color: var(--pink);
       cursor: pointer;
       padding: 4px 8px;
     }
+    #modal-close { color: var(--pink); }
     #modal-close:hover { background: var(--pink); color: #1a000d; }
+    #modal-fullscreen { color: var(--green); }
+    #modal-fullscreen:hover { background: var(--green); color: #001a0d; }
     #game-frame-wrap {
       width: 100%;
       aspect-ratio: 16/9;
@@ -709,7 +711,10 @@
   <div id="game-modal-inner">
     <div id="game-modal-header">
       <span id="game-modal-title">PLAYING: ...</span>
-      <button id="modal-close" onclick="closeGame()">✕ CLOSE</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="modal-fullscreen" onclick="openFullscreen()">⛶ FULL SCREEN</button>
+        <button id="modal-close" onclick="closeGame()">✕ CLOSE</button>
+      </div>
     </div>
     <div id="game-frame-wrap">
       <div id="game-frame-placeholder">
@@ -762,7 +767,10 @@
   });
 
   // ── GAME MODAL ────────────────────────────────────────
+  let currentGameUrl = '';
+
   function openGame(name, url) {
+    currentGameUrl = url;
     document.getElementById('game-modal-title').textContent = 'PLAYING: ' + name.toUpperCase();
     const wrap = document.getElementById('game-frame-wrap');
     wrap.innerHTML = '';
@@ -788,6 +796,11 @@
     document.getElementById('game-modal').classList.remove('open');
     document.getElementById('game-frame-wrap').innerHTML = '';
     document.body.style.overflow = '';
+    currentGameUrl = '';
+  }
+
+  function openFullscreen() {
+    if (currentGameUrl) window.open(currentGameUrl, '_blank');
   }
 
   document.getElementById('game-modal').addEventListener('click', function(e) {
