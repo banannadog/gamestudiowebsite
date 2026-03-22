@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luca & Declan's Game Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0d1a;
+      --card-bg: #1a1a2e;
+      --yellow: #ffe84d;
+      --pink: #ff4daa;
+      --green: #4dffb4;
+      --blue: #4d9fff;
+      --purple: #c084fc;
+      --text: #f0f0ff;
+      --muted: #888aaa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── PIXEL STARS ──────────────────────────────────── */
+    #stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: #fff;
+      image-rendering: pixelated;
+      animation: twinkle var(--dur) ease-in-out infinite alternate;
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%   { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 0.85; transform: scale(1); }
+    }
+
+    /* ── NAV ──────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(13,13,26,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid #ffffff14;
+    }
+    .nav-logo {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      color: var(--yellow);
+      letter-spacing: 1px;
+    }
+    .nav-links a {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 24px;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--yellow); }
+
+    /* ── SECTIONS ─────────────────────────────────────── */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HERO ─────────────────────────────────────────── */
+    #hero {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 20px 80px;
+    }
+
+    .hero-badge {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--green);
+      border: 2px solid var(--green);
+      padding: 6px 14px;
+      margin-bottom: 28px;
+      display: inline-block;
+      animation: pulse-border 2s ease-in-out infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { box-shadow: 0 0 0 0 #4dffb455; }
+      50%       { box-shadow: 0 0 0 6px #4dffb400; }
+    }
+
+    .hero-sprite {
+      font-size: 72px;
+      margin-bottom: 20px;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(20px, 4vw, 40px);
+      line-height: 1.4;
+      color: var(--yellow);
+      text-shadow: 4px 4px 0 #b8860055, 0 0 40px #ffe84d55;
+      margin-bottom: 10px;
+    }
+    h1 span { color: var(--pink); }
+
+    .hero-sub {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(8px, 1.5vw, 13px);
+      color: var(--muted);
+      margin-top: 16px;
+      line-height: 1.8;
+      max-width: 520px;
+    }
+
+    .hero-buttons {
+      margin-top: 40px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      padding: 14px 24px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform .1s, box-shadow .1s;
+      image-rendering: pixelated;
+    }
+    .btn:active { transform: translateY(3px) !important; box-shadow: none !important; }
+    .btn-primary {
+      background: var(--yellow);
+      color: #1a1a00;
+      box-shadow: 4px 4px 0 #b8860088;
+    }
+    .btn-primary:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #b8860088; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--green);
+      border: 2px solid var(--green);
+      box-shadow: 4px 4px 0 #4dffb444;
+    }
+    .btn-secondary:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #4dffb444; }
+
+    /* pixel divider */
+    .pixel-divider {
+      width: 100%;
+      height: 6px;
+      background: repeating-linear-gradient(90deg,
+        var(--yellow) 0 8px, var(--pink) 8px 16px,
+        var(--green) 16px 24px, var(--blue) 24px 32px,
+        var(--purple) 32px 40px);
+      opacity: 0.6;
+    }
+
+    /* ── GAMES ────────────────────────────────────────── */
+    #games {
+      padding: 80px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .section-header h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(16px, 3vw, 28px);
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .section-header h2 .accent { color: var(--pink); }
+    .section-header p {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 28px;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border: 2px solid #ffffff18;
+      position: relative;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      overflow: hidden;
+    }
+    .game-card:hover {
+      transform: translate(-4px, -4px);
+      border-color: var(--yellow);
+      box-shadow: 8px 8px 0 #ffe84d33;
+    }
+
+    .game-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #1a1a3e 0%, #2d1b4e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      position: relative;
+      overflow: hidden;
+    }
+    .game-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        transparent 0 3px, rgba(0,0,0,0.08) 3px 4px
+      );
+      pointer-events: none;
+    }
+
+    .game-badge {
+      position: absolute;
+      top: 12px; right: 12px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      padding: 4px 8px;
+      z-index: 2;
+    }
+    .badge-new { background: var(--green); color: #001a0d; }
+    .badge-coming { background: var(--purple); color: #1a001a; }
+
+    .game-info {
+      padding: 20px;
+    }
+    .game-info h3 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 13px;
+      color: var(--yellow);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .game-info p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .game-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .tag {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      padding: 4px 8px;
+      border: 1px solid #ffffff22;
+      color: var(--blue);
+    }
+
+    .btn-play {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      padding: 12px 20px;
+      background: var(--pink);
+      color: #1a000d;
+      border: none;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #8800446a;
+      transition: transform .1s, box-shadow .1s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-play:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 #88004488; }
+    .btn-play:active { transform: translateY(2px); box-shadow: none; }
+    .btn-play.disabled {
+      background: #333355;
+      color: var(--muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-play.disabled:hover { transform: none; }
+
+    /* Game embed modal */
+    #game-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+    #game-modal.open { display: flex; }
+    #game-modal-inner {
+      position: relative;
+      width: 100%;
+      max-width: 860px;
+      background: var(--card-bg);
+      border: 3px solid var(--yellow);
+      box-shadow: 8px 8px 0 #ffe84d33;
+    }
+    #game-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 2px solid #ffffff14;
+    }
+    #game-modal-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--yellow);
+    }
+    #modal-close {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      background: none;
+      border: none;
+      color: var(--pink);
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    #modal-close:hover { background: var(--pink); color: #1a000d; }
+    #game-frame-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+    #game-frame-wrap iframe {
+      width: 100%; height: 100%;
+      border: none;
+    }
+    #game-frame-placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      gap: 16px;
+    }
+    #game-frame-placeholder span { font-size: 48px; }
+
+    /* ── ABOUT ────────────────────────────────────────── */
+    #about {
+      padding: 80px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 0;
+    }
+    @media (max-width: 600px) {
+      .about-grid { grid-template-columns: 1fr; }
+    }
+
+    .character-card {
+      background: var(--card-bg);
+      border: 2px solid #ffffff18;
+      padding: 28px;
+      text-align: center;
+      position: relative;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+    }
+    .character-card:hover {
+      border-color: var(--green);
+      transform: translate(-4px, -4px);
+      box-shadow: 8px 8px 0 #4dffb433;
+    }
+    .character-card .sprite {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+    .character-card:last-child .sprite {
+      animation-delay: -1.5s;
+    }
+    .character-card h3 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+    .character-card .role {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--purple);
+      margin-bottom: 16px;
+    }
+    .character-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .stat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 20px;
+      text-align: left;
+    }
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+    .stat-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--muted);
+      min-width: 60px;
+    }
+    .stat-bar {
+      flex: 1;
+      height: 8px;
+      background: #ffffff14;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-fill {
+      height: 100%;
+      background: var(--green);
+      width: 0;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+    .character-card:nth-child(2) .stat-fill { background: var(--blue); }
+
+    /* ── FOOTER ───────────────────────────────────────── */
+    footer {
+      padding: 48px 24px 32px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    footer .footer-sprite {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 12px;
+    }
+    footer p {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--muted);
+      line-height: 2;
+    }
+    footer .heart { color: var(--pink); }
+
+    /* ── SCROLL REVEAL ────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Pixel star field -->
+<div id="stars"></div>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">🕹️ L&D STUDIO</span>
+  <div class="nav-links">
+    <a href="#games">GAMES</a>
+    <a href="#about">ABOUT</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">✦ OPEN FOR PLAY ✦</div>
+  <span class="hero-sprite">🎮</span>
+  <h1>LUCA &amp; DECLAN'S<br /><span>GAME STUDIO</span></h1>
+  <p class="hero-sub">Two kids. Infinite ideas.<br />Real games you can play right now.</p>
+  <div class="hero-buttons">
+    <a href="#games" class="btn btn-primary">▶ PLAY OUR GAMES</a>
+    <a href="#about" class="btn btn-secondary">MEET THE DEVS</a>
+  </div>
+</section>
+
+<div class="pixel-divider"></div>
+
+<!-- GAMES -->
+<section id="games">
+  <div class="section-header reveal">
+    <h2>OUR <span class="accent">GAMES</span></h2>
+    <p>Click play to launch right in your browser — no downloads needed.</p>
+  </div>
+
+  <div class="games-grid">
+
+    <!-- Game 1 -->
+    <div class="game-card reveal">
+      <div class="game-thumb">
+        🚀
+        <span class="game-badge badge-new">★ NEW</span>
+      </div>
+      <div class="game-info">
+        <h3>SPACE BLASTER 3000</h3>
+        <p>Defend the galaxy from waves of alien ships. How long can you survive?</p>
+        <div class="game-meta">
+          <span class="tag">ACTION</span>
+          <span class="tag">1 PLAYER</span>
+          <span class="tag">KEYBOARD</span>
+        </div>
+        <button class="btn-play" onclick="openGame('Space Blaster 3000', '')">▶ PLAY NOW</button>
+      </div>
+    </div>
+
+    <!-- Game 2 -->
+    <div class="game-card reveal">
+      <div class="game-thumb" style="background: linear-gradient(135deg, #0d2e1a 0%, #1a3d10 100%);">
+        🐸
+      </div>
+      <div class="game-info">
+        <h3>FROG JUMP EXTREME</h3>
+        <p>Help Freddy the frog leap across lily pads without falling in the swamp!</p>
+        <div class="game-meta">
+          <span class="tag">PLATFORMER</span>
+          <span class="tag">1 PLAYER</span>
+          <span class="tag">MOUSE</span>
+        </div>
+        <button class="btn-play" onclick="openGame('Frog Jump Extreme', '')">▶ PLAY NOW</button>
+      </div>
+    </div>
+
+    <!-- Coming Soon -->
+    <div class="game-card reveal">
+      <div class="game-thumb" style="background: linear-gradient(135deg, #1a0d2e 0%, #2e1a00 100%); filter: grayscale(0.4);">
+        ❓
+        <span class="game-badge badge-coming">COMING SOON</span>
+      </div>
+      <div class="game-info">
+        <h3 style="color: var(--purple);">??? SECRET PROJECT</h3>
+        <p>Luca and Declan are cooking up something new. Check back soon to find out what it is...</p>
+        <div class="game-meta">
+          <span class="tag" style="color: var(--purple);">MYSTERY</span>
+          <span class="tag" style="color: var(--purple);">TBD</span>
+        </div>
+        <button class="btn-play disabled">⏳ NOT YET...</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="pixel-divider"></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header reveal">
+    <h2>MEET THE <span class="accent">DEVS</span></h2>
+    <p>The two masterminds behind the studio.</p>
+  </div>
+
+  <div class="about-grid">
+
+    <div class="character-card reveal">
+      <span class="sprite">👦</span>
+      <h3>LUCA</h3>
+      <div class="role">CO-FOUNDER · GAME DESIGNER</div>
+      <p>Luca comes up with the big ideas. He loves action games, drawing characters, and making things explode on screen.</p>
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-label">IDEAS</span>
+          <div class="stat-bar"><div class="stat-fill" data-width="95"></div></div>
+        </div>
+        <div class="stat">
+          <span class="stat-label">CODING</span>
+          <div class="stat-bar"><div class="stat-fill" data-width="72"></div></div>
+        </div>
+        <div class="stat">
+          <span class="stat-label">ART</span>
+          <div class="stat-bar"><div class="stat-fill" data-width="80"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="character-card reveal">
+      <span class="sprite">👦</span>
+      <h3>DECLAN</h3>
+      <div class="role">CO-FOUNDER · PROGRAMMER</div>
+      <p>Declan makes the ideas actually work. He loves figuring out how things work under the hood and fixing bugs.</p>
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-label">IDEAS</span>
+          <div class="stat-bar"><div class="stat-fill" data-width="78"></div></div>
+        </div>
+        <div class="stat">
+          <span class="stat-label">CODING</span>
+          <div class="stat-bar"><div class="stat-fill" data-width="92"></div></div>
+        </div>
+        <div class="stat">
+          <span class="stat-label">ART</span>
+          <div class="stat-bar"><div class="stat-fill" data-width="60"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-sprite">👾</span>
+  <p>© 2025 LUCA &amp; DECLAN'S GAME STUDIO</p>
+  <p>MADE WITH <span class="heart">♥</span> AND A LOT OF SNACKS</p>
+</footer>
+
+<!-- GAME MODAL -->
+<div id="game-modal">
+  <div id="game-modal-inner">
+    <div id="game-modal-header">
+      <span id="game-modal-title">PLAYING: ...</span>
+      <button id="modal-close" onclick="closeGame()">✕ CLOSE</button>
+    </div>
+    <div id="game-frame-wrap">
+      <div id="game-frame-placeholder">
+        <span>🎮</span>
+        <p>Paste your game's embed URL in the code to activate this!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── PIXEL STARS ──────────────────────────────────────
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      --dur: ${1.5 + Math.random() * 3}s;
+      animation-delay: ${Math.random() * 3}s;
+      width: ${Math.random() > 0.7 ? '6px' : '4px'};
+      height: ${Math.random() > 0.7 ? '6px' : '4px'};
+      opacity: ${Math.random() * 0.5};
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // ── SCROLL REVEAL ─────────────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          e.target.classList.add('visible');
+          // Animate stat bars when about section reveals
+          e.target.querySelectorAll('.stat-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+          });
+        }, 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Stagger cards in grids
+  document.querySelectorAll('.games-grid .reveal, .about-grid .reveal').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.12}s`;
+  });
+
+  // ── GAME MODAL ────────────────────────────────────────
+  function openGame(name, url) {
+    document.getElementById('game-modal-title').textContent = 'PLAYING: ' + name.toUpperCase();
+    const wrap = document.getElementById('game-frame-wrap');
+    wrap.innerHTML = '';
+    if (url) {
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.allowFullscreen = true;
+      iframe.allow = 'autoplay';
+      wrap.appendChild(iframe);
+    } else {
+      wrap.innerHTML = `<div id="game-frame-placeholder">
+        <span>🎮</span>
+        <p style="font-family:'Press Start 2P',monospace;font-size:10px;color:#888aaa;text-align:center;line-height:2">
+          Paste the game's<br>embed URL in the<br>HTML to activate!
+        </p>
+      </div>`;
+    }
+    document.getElementById('game-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGame() {
+    document.getElementById('game-modal').classList.remove('open');
+    document.getElementById('game-frame-wrap').innerHTML = '';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('game-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeGame();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeGame();
+  });
+</script>
+</body>
+</html>
